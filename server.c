@@ -31,7 +31,27 @@ void func(int sockfd){
 			strcpy(buff, "MyComputer\n");
 		}
 		else if (strncmp("memory", dariClient, 6) == 0){
-			int stat = system("free>text.txt");
+			
+			strcpy(buff, "used.value ");
+			FILE *fp = popen("free | awk 'FNR == 2 {print $3}'", "r");
+			if (fp == NULL) {
+				printf("Failed to run command\n" );
+				exit(1);
+			}
+			char used_buff[MAX];
+			fgets(used_buff, sizeof(used_buff)-1, fp);
+			pclose(fp);
+			strcat(buff, used_buff);
+			strcat(buff, "free.value ");
+			bzero(used_buff, MAX);
+			fp = popen("free | awk 'FNR == 2 {print $4}'", "r");
+			if (fp == NULL) {
+				printf("Failed to run command\n" );
+				exit(1);
+			}
+			fgets(used_buff, sizeof(used_buff)-1, fp);
+			pclose(fp);
+			strcat(buff, used_buff);
 		}
 		//while((buff[n++]=getchar())!='\n');
 		write(sockfd,buff,sizeof(buff));
