@@ -7,7 +7,7 @@
 #include<string.h>
 
 #define MAX 80
-#define PORT 43454
+#define PORT 4949
 #define SA struct sockaddr
 
 void func(int sockfd){

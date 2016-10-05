@@ -5,12 +5,13 @@
 #include <netdb.h>
 #include <stdlib.h>
 #include <string.h>
+#include <pthread.h>
 
-#define PORT 49490
+#define PORT 49491
 #define SA struct sockaddr
 #define MAX 100
 
-void fungsi (int socketfd){
+void *fungsi (int socketfd){
 	char buff[MAX];
 	char dariClient[MAX];
 	bzero(buff, MAX);
@@ -110,7 +111,7 @@ void fungsi (int socketfd){
 			write(socketfd, buff, sizeof(buff));
 		}
 		else if(strncmp("quit", dariClient, 4) == 0){
-			exit(0);
+			break;
 		}
 		else{
 			strcpy(buff, "# Unknown command. Try cap, list, nodes, config, fetch, version or quit\n");
@@ -149,9 +150,13 @@ int main(){
 		printf("server mendengar\n");
 	}
 	len = sizeof(client);
-	connectfd = accept(socketfd, (SA*)&client, &len);
-	if(connectfd >= 0){
-		fungsi(connectfd);
+	pthread_t tid;
+	int i;
+	for (i = 0; i < 3; i++) {
+		connectfd = accept(socketfd, (SA*)&client, &len);
+		if(connectfd >= 0){
+			pthread_create(&tid, NULL, fungsi, (void *)connectfd);
+		}
 	}
 	close(socketfd);
 	
