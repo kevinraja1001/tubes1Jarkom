@@ -111,6 +111,7 @@ void *fungsi (int socketfd){
 			write(socketfd, buff, sizeof(buff));
 		}
 		else if(strncmp("quit", dariClient, 4) == 0){
+			close(socketfd);
 			break;
 		}
 		else{
